@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <PluginConfig>
-	<SupportURL>https://github.com/ghawken/Indigo-OpenAPLR</SupportURL>
+	<SupportURL>https://github.com/ghawken/Indigo-OpenALPR</SupportURL>
 
     <Field id="autoLabel1" type="label"> 
-        <Label>OpenAPLR can receive WebHooks from OpenAPLR.</Label>
+        <Label>OpenALPR can receive WebHooks from OpenALPR.</Label>
     </Field>
 
     <Field id="simpleSeparator1" type="separator"/>
@@ -24,7 +24,7 @@
 
 	<Field type="checkbox" id="createVar" defaultValue="false">
 		<Label>Create variables:</Label>
-		<Description>Creates "OpenAPLR_" deviceID, name and location variables when triggered.</Description>
+		<Description>Creates "OpenALPR_" deviceID, name and location variables when triggered.</Description>
 	</Field>
     
 	<Field id="simpleSeparator8" type="separator"/>

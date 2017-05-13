@@ -1,5 +1,7 @@
-# Indigo-OpenAPLR
+# Indigo-OpenALPR
 
-Indigodomo plugin to integrate OpenAPLR Web Service into Indigo
+Indigodomo plugin to integrate OpenALPR Web Service into Indigo
 
-Collects the data from the OpenAPLR created Webhooks and allows automation to follow.
+(Licence Plate Recognition from Cameras)
+
+Collects the data from the OpenALPR created Webhooks and allows automation to follow.

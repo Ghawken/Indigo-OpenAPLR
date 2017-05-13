@@ -15,18 +15,18 @@ import threading
 # Code Base retasked badly from github/flic/beecon with thanks!
 
 def updateVar(name, value):
-    if not ('OpenAPLR' in indigo.variables.folders):
+    if not ('OpenALPR' in indigo.variables.folders):
         # create folder
-        folderId = indigo.variables.folder.create('OpenAPLR')
+        folderId = indigo.variables.folder.create('OpenALPR')
         folder = folderId.id
     else:
-        folder = indigo.variables.folders.getId('OpenAPLR')
+        folder = indigo.variables.folders.getId('OpenALPR')
 
 
-	if name not in indigo.variables:
-		NewVar= indigo.variable.create(name, value=value, folder=folder)
-	else:
-		indigo.variable.updateValue(name, value)
+    if name not in indigo.variables:
+        NewVar= indigo.variable.create(name, value=value, folder=folder)
+    else:
+        indigo.variable.updateValue(name, value)
 
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
     """Handle requests in a separate thread."""
@@ -36,17 +36,19 @@ class httpHandler(BaseHTTPRequestHandler):
       self.plugin = plugin
       self.plugin.debugLog(u"New httpHandler thread: "+threading.currentThread().getName()+", total threads: "+str(threading.activeCount()))
       BaseHTTPRequestHandler.__init__(self,*args)
-    
+
+
+
    def deviceUpdate(self,device,deviceAddress,event, site_id, camera_id, epoch_start, best_plate_number, best_confidence, uuid, vehicle_color, vehicle_make, CloudURL):
       self.plugin.debugLog(u"deviceUpdate called")
 
       if (self.plugin.createVar):
-         updateVar("OpenAPLR_deviceID",str(device.id))
-         updateVar("OpenAPLR_ID",site_id.lower()+"@@"+camera_id.lower() )
-         updateVar("OpenAPLR_Plate", best_plate_number)
-      
+         updateVar("OpenALPR_deviceID",str(device.id))
+         updateVar("OpenALPR_ID",site_id.lower()+"@@"+camera_id.lower() )
+         updateVar("OpenALPR_Plate", best_plate_number)
 
-      indigo.server.log("Enter OpenAPLR notification received from sender/location "+deviceAddress)
+
+      indigo.server.log("Enter OpenALPR notification received from sender/location "+deviceAddress)
 
       device.updateStateOnServer('site_id', value=site_id)
       device.updateStateOnServer('camera_id', value=camera_id)
@@ -58,21 +60,43 @@ class httpHandler(BaseHTTPRequestHandler):
       device.updateStateOnServer('VehicleMake', value=vehicle_make)
       device.updateStateOnServer('CloudURLImage', value=CloudURL)
 
-      device.updateStateImageOnServer(indigo.kStateImageSel.MotionSensorTripped)
-      self.triggerEvent("newPlate",best_plate_number)
+      #device.updateStateImageOnServer(indigo.kStateImageSel.MotionSensorTripped)
+
+      self.triggerEvent(device)
+
+      #self.triggerEvent("newPlate",best_plate_number)
       return
 
-            
-   def triggerEvent(self,eventType, best_plate_number):
-      self.plugin.debugLog(u"triggerEvent called")
-      for trigger in self.plugin.events[eventType]:
-         indigo.trigger.execute(trigger)
-      return
-         
+
+   def triggerEvent(self, device):
+       self.plugin.debugLog(u"triggerEvent called")
+       self.plugin.debugLog(u'Okay triggerEvent called')
+       try:
+           self.plugin.debugLog(u"About to check self.triggers")
+           for triggerId, trigger in sorted(self.plugin.triggers.iteritems()):
+               self.plugin.debugLog("Checking Trigger %s (%s), Type: %s" % (trigger.name, trigger.id, trigger.pluginTypeId))
+
+               #if trigger.pluginProps["deviceID"] != str(device.id):
+               #    self.debugLog("\t\tSkipping Trigger %s (%s), wrong device: %s" % (trigger.name, trigger.id, device.id))
+               #else:
+               if trigger.pluginTypeId == "newPlate":
+                   #self.debugLog("Executing Trigger %s (%d)" % (trigger.name, trigger.id))
+                   indigo.trigger.execute(trigger)
+
+               #else:
+                   #self.debugLog("Unknown Trigger Type %s (%d), %s" % (trigger.name, trigger.id, trigger.pluginTypeId))
+
+       except Exception as e:
+           self.plugin.debugLog(u'Error'+str(e))
+
+
+       return
+
+
    def deviceCreate(self,site_id, camera_id, epoch_start, best_plate_number, best_confidence, uuid, vehicle_color, vehicle_make, CloudURL):
       self.plugin.debugLog(u"deviceCreate called")
       deviceName = site_id+"@@"+camera_id
-      device = indigo.device.create(address=deviceName,deviceTypeId="OpenAPLRCamera",name=deviceName,folder="OpenAPLR", protocol=indigo.kProtocol.Plugin)
+      device = indigo.device.create(address=deviceName,deviceTypeId="OpenALPRCamera",name=deviceName,folder="OpenALPR", protocol=indigo.kProtocol.Plugin)
 
       self.plugin.deviceList[device.id] = {'ref':device,'name':device.name,'address':device.address}
       self.plugin.debugLog(u"Created new device, "+ deviceName)
@@ -84,7 +108,7 @@ class httpHandler(BaseHTTPRequestHandler):
       self.plugin.debugLog(u"parseResult called")
 
       deviceAddress = site_id +"@@"+ camera_id
-      event = 'OpenAPLR DataReceived'
+      event = 'OpenALPR DataReceived'
       foundDevice = False
       if self.plugin.deviceList:
          for b in self.plugin.deviceList:
@@ -116,15 +140,15 @@ class httpHandler(BaseHTTPRequestHandler):
          uagent = str(self.headers.getheader('user-agent'))
          self.plugin.debugLog(u"User-agent: %s, Content-type: %s" % (uagent, ctype))
          data = self.rfile.read(int(self.headers['Content-Length']))
-         data = data.decode('utf-8') 
+         data = data.decode('utf-8')
          self.plugin.debugLog(u"Data (UTF-8 decoded):  %s" % data)
 # Custom
 # Locative
          datajson = json.loads(data)
          self.plugin.debugLog(unicode(datajson))
 
-         if (('Mozilla' in uagent) or ('OpenAPLR' in uagent)):
-            self.plugin.debugLog(u"Recognised OpenAPLR")
+         if (('Mozilla' in uagent) or ('OpenALPR' in uagent)):
+            self.plugin.debugLog(u"Recognised OpenALPR")
 
             if (ctype == 'application/x-www-form-urlencoded') or (ctype=='application/json'):
                 site_id = "Unknown"
@@ -166,29 +190,26 @@ class httpHandler(BaseHTTPRequestHandler):
                     CloudURL = "https://cloud.openalpr.com/img/" + datajson['agent_uid'] +'/' + uuid + ".jpg"
 
                 self.parseResult(site_id, camera_id, epoch_start, best_plate_number, best_confidence, uuid, vehicle_color, vehicle_make, CloudURL)
-               # else:
-                #   indigo.server.log(u"Received OPENAPLR data, but one or more parameters are missing",isError=True)
             else:
-
-               indigo.server.log(u"Received OpenAPLR data but wrong c-type")
-# Geofency
+                indigo.server.log(u"Received OpenALPR data but wrong c-type")
 
       except Exception as e:
-         indigo.server.log(u"Exception: %s" % str(e), isError=True)
-         pass
+          indigo.server.log(u"Exception: %s" % str(e), isError=True)
+          indigo.server.log(u'Error:'+str(e) )
+          pass
 
 class Plugin(indigo.PluginBase):
    def __init__(self, pluginId, pluginDisplayName, pluginVersion, pluginPrefs):
       indigo.PluginBase.__init__(self, pluginId, pluginDisplayName, pluginVersion, pluginPrefs)
       self.deviceList = {}
-      
-      self.events = dict()
-      self.events["newPlate"] = dict()
 
-      
+      self.triggers = {}
+      #self.events["newPlate"] = dict()
+
+
    def __del__(self):
       indigo.PluginBase.__del__(self)
-    
+
    def startup(self):
       self.loadPluginPrefs()
       self.debugLog(u"Startup called")
@@ -207,29 +228,31 @@ class Plugin(indigo.PluginBase):
 
    def deviceStopComm(self, device):
       self.debugLog(device.name + ": Stopping device")
-      if (device.deviceTypeId == u'OpenAPLRCamera'):
+      if (device.deviceTypeId == u'OpenALPRCamera'):
          del self.deviceList[device.id]
 
    def shutdown(self):
       self.debugLog(u"Shutdown called")
 
    def triggerStartProcessing(self, trigger):
-      self.debugLog(u"Start processing trigger " + unicode(trigger.name))
-      self.events[trigger.pluginTypeId][trigger.id] = trigger
+       self.debugLog("Adding Trigger %s (%d) - %s" % (trigger.name, trigger.id, trigger.pluginTypeId))
+       assert trigger.id not in self.triggers
+       self.triggers[trigger.id] = trigger
+       return
 
    def triggerStopProcessing(self, trigger):
-      self.debugLog(u"Stop processing trigger " + unicode(trigger.name))
-      if trigger.pluginTypeId in self.events:
-         if trigger.id in self.events[trigger.pluginTypeId]:
-            del self.events[trigger.pluginTypeId][trigger.id]
+       self.debugLog("Removing Trigger %s (%d)" % (trigger.name, trigger.id))
+       assert trigger.id in self.triggers
+       del self.triggers[trigger.id]
+       return
 
    def actionControlSensor(self, action, device):
       self.debugLog(u"Manual sensor state change request: " + device.name)
 
 
    def validatePrefsConfigUi(self, valuesDict):	
-      self.debugLog(u"validating Prefs called")	
-      port = int(valuesDict[u'listenPort'])	
+      self.debugLog(u"validating Prefs called")
+      port = int(valuesDict[u'listenPort'])
       if (port <= 0 or port>65535):
          errorMsgDict = indigo.Dict()
          errorMsgDict[u'port'] = u"Port number needs to be a valid TCP port (1-65535)."
@@ -245,7 +268,7 @@ class Plugin(indigo.PluginBase):
          self.loadPluginPrefs()
 
    def loadPluginPrefs(self):
-      self.debugLog(u"loadpluginPrefs called")	
+      self.debugLog(u"loadpluginPrefs called")
       self.debug = self.pluginPrefs.get('debugEnabled',False)
       self.createDevice = self.pluginPrefs.get('createDevice',True)
       self.listenPort = int(self.pluginPrefs.get('listenPort',6192))
@@ -268,10 +291,11 @@ class Plugin(indigo.PluginBase):
       indigo.server.log(u"Listening on TCP port " + str(self.listenPort))
       self.server = ThreadedHTTPServer(('', self.listenPort), lambda *args: httpHandler(self, *args))
       self.server.serve_forever()
-            
+      return
+
    def runConcurrentThread(self):
       while True:
          self.sleep(1)
-         
+
 
  

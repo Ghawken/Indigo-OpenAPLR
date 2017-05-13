@@ -2,6 +2,12 @@
 <Events>
     <Event id="newPlate">
         <Name>New Plate Alert/Trigger</Name>
-    </Event>
+        <ConfigUI>
+            <Field id="deviceID" type="menu">
+                <Label>Select Device:</Label>
+                <List class="indigo.devices" filter="self"/>
+            </Field>
+        </ConfigUI>
+	</Event>
 
 </Events>
