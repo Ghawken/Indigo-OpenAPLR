@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<Events>
+    <Event id="newPlate">
+        <Name>New Plate Alert/Trigger</Name>
+    </Event>
+
+</Events>

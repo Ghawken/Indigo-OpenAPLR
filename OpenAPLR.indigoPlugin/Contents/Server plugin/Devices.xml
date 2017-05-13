@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<Devices>
+		<Device type="custom" id="OpenAPLRCamera">
+		<Name>OpenAPLR Camera</Name>
+		<ConfigUI>
+			<SupportURL>https://github.com/flic/beacon</SupportURL>
+
+			<Field id="label1" type="label">
+				<Label>Device address, in the form of [sender name]@@[location/region name]</Label>
+			</Field>
+			<Field id="label2" type="label">
+				<Label>For example, if you're using Geohopper sender name is usually your email address, and location name is the name of the region: "name@example.com@@myregion".</Label>
+			</Field>
+
+
+
+ 			<Field id="address" type="textfield">
+ 				<Label>Address:</Label>
+ 				<Description>Device address, in the form of [sender name]@@[location/region name]</Description>
+ 			</Field>
+
+		</ConfigUI>
+		<States>
+			<State id="site_id">
+        <ValueType>String</ValueType>
+        <TriggerLabel>OpenAPLR Site ID</TriggerLabel>
+        <ControlPageLabel>OpenAPLR Site ID</ControlPageLabel>
+      </State>
+			<State id="camera_id">
+        <ValueType>String</ValueType>
+        <TriggerLabel>OpenAPLR Camera ID</TriggerLabel>
+        <ControlPageLabel>OpenAPLR Camera ID</ControlPageLabel>
+      </State>
+			<State id="epoch_start">
+        <ValueType>String</ValueType>
+        <TriggerLabel>OpenAPLR Epoch Start</TriggerLabel>
+        <ControlPageLabel>OpenAPLR Epoch Start</ControlPageLabel>
+      </State>
+				<State id="PlateNumber">
+        <ValueType>String</ValueType>
+        <TriggerLabel>OpenAPLR Plate Number</TriggerLabel>
+        <ControlPageLabel>OpenAPLR Plate Number</ControlPageLabel>
+      </State>
+					<State id="Confidence">
+        <ValueType>String</ValueType>
+        <TriggerLabel>OpenAPLR Confidence Level</TriggerLabel>
+        <ControlPageLabel>OpenAPLR Confidence Level</ControlPageLabel>
+      </State>
+			<State id="uuid">
+        <ValueType>String</ValueType>
+        <TriggerLabel>OpenAPLR uuid</TriggerLabel>
+        <ControlPageLabel>OpenAPLR uuid</ControlPageLabel>
+      </State>
+			<State id="VehicleColor">
+        <ValueType>String</ValueType>
+        <TriggerLabel>OpenAPLR Vehicle Color</TriggerLabel>
+        <ControlPageLabel>OpenAPLR Vehicle Color</ControlPageLabel>
+      </State>
+						<State id="VehicleMake">
+        <ValueType>String</ValueType>
+        <TriggerLabel>OpenAPLR Vehicle Make</TriggerLabel>
+        <ControlPageLabel>OpenAPLR Vehicle Make</ControlPageLabel>
+      </State>
+									<State id="CloudURLImage">
+        <ValueType>String</ValueType>
+        <TriggerLabel>OpenAPLR Cloud URL Image</TriggerLabel>
+        <ControlPageLabel>OpenAPLR Cloud URL Image</ControlPageLabel>
+      </State>
+
+		</States>
+	</Device>
+</Devices>

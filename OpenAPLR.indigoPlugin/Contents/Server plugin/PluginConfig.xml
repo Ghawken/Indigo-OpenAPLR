@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<PluginConfig>
+	<SupportURL>https://github.com/ghawken/Indigo-OpenAPLR</SupportURL>
+
+    <Field id="autoLabel1" type="label"> 
+        <Label>OpenAPLR can receive WebHooks from OpenAPLR.</Label>
+    </Field>
+
+    <Field id="simpleSeparator1" type="separator"/>
+
+    <Field id="listenPort" type="textfield" readonly="NO" defaultValue="6192">
+            <Label>TCP port:</Label>
+            <Description>Listen port for the HTTP server</Description>
+    </Field>
+    
+    <Field type="checkbox" id="createDevice" defaultValue="true">
+    	<Label>Create device</Label>
+    	<Description>Automatically create device if it doesn't exist</Description>
+    </Field>
+    
+    <Field id="simpleSeparator2" type="separator"/>
+    
+	<Field id="simpleSeparator7" type="separator"/>
+
+	<Field type="checkbox" id="createVar" defaultValue="false">
+		<Label>Create variables:</Label>
+		<Description>Creates "OpenAPLR_" deviceID, name and location variables when triggered.</Description>
+	</Field>
+    
+	<Field id="simpleSeparator8" type="separator"/>
+	
+	<Field type="checkbox" id="testTrigger" defaultValue="false">
+		<Label>Trigger on test message</Label>
+		<Description>Executes trigger when a test message is received</Description>
+	</Field>
+	<Field type="menu" id="testTriggeraction" defaultValue="toggle" visibleBindingId="testTrigger" visibleBindingValue="true">
+		<Label>Type of trigger:</Label>
+		<List>
+			<Option value="enter">Enter</Option>
+			<Option value="exit">Exit</Option>
+			<Option value="toggle">Toggle</Option>
+		</List>
+	</Field>
+
+	<Field id="simpleSeparator9" type="separator"/>
+	
+	<Field type="checkbox" id="debugEnabled" defaultValue="false">
+		<Label>Enable debugging:</Label>
+		<Description>(not recommended)</Description>
+	</Field>
+
+</PluginConfig>
